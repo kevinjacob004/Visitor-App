@@ -13,6 +13,14 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class AddActivity extends AppCompatActivity {
 
     EditText e1,e2,e3,e4;
@@ -42,7 +50,40 @@ public class AddActivity extends AppCompatActivity {
                 getPur=e3.getText().toString();
                 getWtm=e4.getText().toString();
 
-                Toast.makeText(getApplicationContext(),(getFName+" "+getLname+" "+getPur+" "+getWtm),Toast.LENGTH_LONG).show();
+                if(getFName.isEmpty()||getLname.isEmpty()||getPur.isEmpty()||getWtm.isEmpty()){
+
+                    Toast.makeText(getApplicationContext(),"All the fields are mandatory",Toast.LENGTH_LONG).show();
+                }
+                else{
+
+                    callApi();
+                }
+            }
+
+            private void callApi() {
+                String apiUrl="https://log-app-demo-api.onrender.com/addvisitor";
+                JSONObject data= new JSONObject();
+                try {
+                    data.put("firstname",getFName);
+                    data.put("lastname",getLname);
+                    data.put("purpose",getPur);
+                    data.put("whomToMeet",getWtm);
+
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+
+                JsonObjectRequest request=new JsonObjectRequest(
+                        Request.Method.POST,
+                        apiUrl,
+                        data,
+                        response -> Toast.makeText(getApplicationContext(),"Successfully Added",Toast.LENGTH_LONG).show(),
+                        error -> Toast.makeText(getApplicationContext(),"Something went wrong",Toast.LENGTH_LONG).show()
+                );
+
+                RequestQueue queue= Volley.newRequestQueue(getApplicationContext());
+                queue.add(request);
+
             }
         });
 
